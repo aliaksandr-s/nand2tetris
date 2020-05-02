@@ -5,39 +5,40 @@
 
 // Executes a sequence of arithmetic and logical operations
 // on the stack. 
+
 push constant 17
 push constant 17
-eq
+eq // -1
 push constant 17
 push constant 16
-eq
+eq // 0
 push constant 16
 push constant 17
-eq
+eq // 0
 push constant 892
 push constant 891
-lt
+lt // 0
 push constant 891
 push constant 892
-lt
+lt // -1
 push constant 891
 push constant 891
-lt
+lt // 0
 push constant 32767
 push constant 32766
-gt
+gt // -1
 push constant 32766
 push constant 32767
-gt
+gt // 0
 push constant 32766
 push constant 32766
-gt
+gt // 0
 push constant 57
 push constant 31
 push constant 53
-add
+add // 84
 push constant 112
-sub
+sub // -28
 neg
 and
 push constant 82

@@ -5,7 +5,7 @@
 
 // Executes pop and push commands using the virtual memory segments.
 push constant 10
-pop local 0
+pop local 0 
 push constant 21
 push constant 22
 pop argument 2
