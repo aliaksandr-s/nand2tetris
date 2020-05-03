@@ -7,7 +7,7 @@
   [[cmd type val]] (op/push type val))
 
 (defmethod parse "pop"
-  [[cmd type val]] (op/pop type val))
+  [[cmd type val]] (op/pop-op type val))
 
 (defmethod parse "add"
   [cmd] (op/two-sign-op :add))

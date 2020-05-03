@@ -5,8 +5,10 @@
 
 (def label-id (atom 0))
 (def temp-base-addr 5)
-(def file-name (-> (first *command-line-args*)
-                   utl/get-file-name))
+; (def file-name (-> (first *command-line-args*)
+;                    utl/get-file-name))
+
+(def file-name "StaticTest") ; quick workaround to make compilation work
 
 (defn generate-label-id [name]
   (swap! label-id inc)
@@ -55,7 +57,7 @@
      "A=M"
      (repeat (read-string val) "A=A+1")]))
 
-(defn pop [type val]
+(defn pop-op [type val]
   (let [types {:static   (str "@" file-name "." val)
                :local    (calc-local-addr "@LCL" val)
                :argument (calc-local-addr "@ARG" val)

@@ -8,3 +8,9 @@
 
 `$ bb --classpath src --main translator.main {file-path}`
 
+
+## Steps to create an executable jar file
+
+1. `mkdir classes`
+2. `clj -e "(compile 'translator.main)"`
+3. `clojure -A:uberjar --main-class translator.main`

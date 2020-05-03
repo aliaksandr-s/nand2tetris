@@ -1,6 +1,7 @@
 (ns translator.main
   (:require [translator.utils :as utl]
-            [translator.parser :refer [parse]]))
+            [translator.parser :refer [parse]])
+  (:gen-class))
 
 (defn proccess-file-content [content]
   (->> 
@@ -13,7 +14,8 @@
     utl/join-by-line))
 
 (defn -main [& _args]
-  (let [[file] *command-line-args*]
+; - (let [[file] *command-line-args*]
+  (let [[file] _args]
     (->> file 
          slurp
          proccess-file-content
@@ -23,9 +25,11 @@
 ; (def test-file "../../../MemoryAccess/BasicTest/BasicTest.vm")
 ; (def test-file-1 "../../../StackArithmetic/SimpleAdd/SimpleAdd.vm")
 
+; (def test-file "../../target/StaticTest.vm")
+
 ; (-main test-file-1)
 
-; (->> test-file-1
+; (->> test-file
 ;      slurp
 ;      proccess-file-content
 ;      (spit "test.asm"))

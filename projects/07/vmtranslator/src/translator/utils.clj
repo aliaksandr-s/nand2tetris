@@ -7,7 +7,7 @@
       (str/starts-with? str "//")))
 
 (defn split-by-line [str]
-  (str/split str #"\r\n"))
+  (str/split-lines str))
 
 (defn split-by-whitespace [str]
  (str/split str #"\s+"))
