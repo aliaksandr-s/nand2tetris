@@ -38,6 +38,17 @@
    "A=M"
    "M=D"])
 
+(defn setTempR 
+  "Set a D value to one of temporary registers (R13-R15)"
+  [n]
+  [(str "@R" n)
+   "M=D"])
+
+(defn goToTempR 
+  "Get a value from temp registers (R13-R15)"
+  [n]
+  [(str "@R" n)])
+
 (defn SP->D []
   ["A=M"
    "D=M"])
@@ -142,3 +153,104 @@
      (label end-id)
      (SP++)]))
 
+(defn function [name n]
+  [(label name)
+   (repeat (read-string n) (push :constant "0"))])
+
+(defn restoreCaller 
+  "// THAT = *(endFrame - 1)"
+  "// THIS = *(endFrame - 2)"
+  "// ARG  = *(endFrame - 3)"
+  "// LCL  = *(endFrame - 4)"
+  [label]
+  ["@LCL"
+   "AM=M-1"
+   "D=M"
+   label
+   "M=D"])
+
+(defn return []
+  ["// endFrame = LCL"
+   "@LCL"
+   "D=M"
+
+   "// retAddr = *(endFrame - 5)"
+   "@5"
+   "A=D-A"
+   "D=M"
+   (setTempR 13)
+
+   "// *ARG = pop()"
+   (SP--)
+   (SP->D)
+   "@ARG"
+   "A=M"
+   "M=D"
+
+   "// SP   = ARG + 1"
+   "D=A"
+   "@SP"
+   "M=D"
+   (SP++)
+
+   "// restore caller"
+   (restoreCaller "@THAT")
+   (restoreCaller "@THIS")
+   (restoreCaller "@ARG")
+   (restoreCaller "@LCL")
+
+   "// goto retAddr"
+   (goToTempR 13)
+   "A=M"
+   "0;JMP"
+   ])
+
+
+(defn push-reg [reg]
+  [reg
+   "D=M"
+   "@SP"
+   "A=M"
+   "M=D"
+   (SP++)])
+
+(defn call [f-name arg-n]
+  (let [ret-id (generate-label-id "RET")]
+    ["// SP -> R13"
+     "@SP"
+     "D=M"
+     (setTempR 13)
+
+     "// push @RET"
+     (str "@" ret-id)
+     "D=A"
+     "@SP"
+     "A=M"
+     "M=D"
+     (SP++)
+
+     "// push LCL, ARG, THIS, THAT"
+     (push-reg "@LCL")
+     (push-reg "@ARG")
+     (push-reg "@THIS")
+     (push-reg "@THAT")
+
+     "// ARG = SP - 5 - arg-n"
+     (goToTempR 13)
+     "D=M"
+     (str "@" arg-n)
+     "D=D-A"
+     "@ARG"
+     "M=D"
+
+     "// LCL = SP"
+     "@SP"
+     "D=M"
+     "@LCL"
+     "M=D"
+
+     "// goto f-name"
+     (str "@" f-name)
+     "0;JMP"
+     (label ret-id)
+     ]))

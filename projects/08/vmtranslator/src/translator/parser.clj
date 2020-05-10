@@ -45,12 +45,21 @@
 (defmethod parse "goto"
   [[cmd id]] (op/jump-to id))
 
+(defmethod parse "function"
+  [[cmd name n]] (op/function name n))
+
+(defmethod parse "return"
+  [_] (op/return))
+
+(defmethod parse "call"
+  [[cmd name n]] (op/call name n))
+
 (defmethod parse :default
   [cmd] 
   ; (throw (Exception. (str "No handler for command: " cmd)))
   "// to be defined"
   )
 
-
+; (parse ["function" "SimpleFunction.test" "2"])
 ; (parse ["push" "constant" "10"])
 ; (parse ["label" "LOOP"])
