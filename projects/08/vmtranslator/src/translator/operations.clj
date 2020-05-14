@@ -4,6 +4,7 @@
 ; (def *command-line-args* ["../../../MemoryAccess/BasicTest/BasicTest.vm"])
 
 (def file-name (atom ""))
+(def func-name (atom ""))
 (def label-id (atom 0))
 (def temp-base-addr 5)
 
@@ -15,6 +16,9 @@
 (defn generate-label-id [name]
   (swap! label-id inc)
   (str name "." @label-id))
+
+(defn label-handle [id]
+  (str "(" @func-name "$" id ")" ))
 
 (defn label [id]
   (str "(" id ")"))
@@ -53,10 +57,14 @@
   ["A=M"
    "D=M"])
 
+(defn goto [id]
+  [(str "@" @func-name "$" id)
+   "0;JMP"])
+
 (defn if-goto [id]
   [(SP--)
    (SP->D)
-   (str "@" id)
+   (str "@" @func-name "$" id)
    "D;JGT"])
 
 (defn get-pointer-addr [val]
@@ -154,14 +162,15 @@
      (SP++)]))
 
 (defn function [name n]
+  (reset! func-name name)
   [(label name)
    (repeat (read-string n) (push :constant "0"))])
 
 (defn restoreCaller 
-  "// THAT = *(endFrame - 1)"
-  "// THIS = *(endFrame - 2)"
-  "// ARG  = *(endFrame - 3)"
-  "// LCL  = *(endFrame - 4)"
+  "// THAT = *(endFrame - 1)
+   // THIS = *(endFrame - 2)
+   // ARG  = *(endFrame - 3)
+   // LCL  = *(endFrame - 4)"
   [label]
   ["@LCL"
    "AM=M-1"
@@ -254,3 +263,12 @@
      "0;JMP"
      (label ret-id)
      ]))
+
+
+(defn init []
+  ["@256"
+   "D=A"
+   "@SP"
+   "M=D"
+   (call "Sys.init" "0")
+   "0;JMP"])

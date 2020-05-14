@@ -37,13 +37,13 @@
   [_] (op/eq-op :lt))
 
 (defmethod parse "label"
-  [[cmd id]] (op/label id))
+  [[cmd id]] (op/label-handle id))
 
 (defmethod parse "if-goto"
   [[cmd id]] (op/if-goto id))
 
 (defmethod parse "goto"
-  [[cmd id]] (op/jump-to id))
+  [[cmd id]] (op/goto id))
 
 (defmethod parse "function"
   [[cmd name n]] (op/function name n))

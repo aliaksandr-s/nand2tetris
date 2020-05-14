@@ -15,8 +15,16 @@
 (defn join-by-line [lst]
   (str/join "\r\n" lst))
 
-(defn build-file-path [file]
-  (str/replace file #".vm" ".asm"))
+(defn build-file-path [path]
+  (if (str/includes? path ".vm")
+    (str/replace path #".vm" ".asm")
+    (str path "/" path ".asm")))
+
+(defn create-local-filename [file]
+  (str/replace file #"/" "."))
+
+(defn vm-file? [file]
+  (str/includes? file ".vm"))
 
 (defn get-file-name [path]
   (-> path
