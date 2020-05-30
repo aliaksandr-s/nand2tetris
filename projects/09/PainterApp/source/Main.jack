@@ -1,0 +1,11 @@
+/** Initializes a new painter app and starts it */
+class Main {
+  function void main() {
+    var Painter painter;
+    let painter = Painter.new();
+    do painter.run();
+    do painter.dispose();
+    // do Painter.drawGrid();
+    return;
+  }
+}

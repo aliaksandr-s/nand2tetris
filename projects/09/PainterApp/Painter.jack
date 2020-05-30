@@ -1,0 +1,86 @@
+/** Implements a painer app. 
+* This app allows user to draw on the grid.
+* to switch between black and white colors
+*/
+
+class Painter {
+  field Cursor cursor;
+  field int direction; 
+
+  constructor Painter new() {
+    let cursor = Cursor.new(0,0);
+    let direction = 0;  // initial state is no movement
+
+    return this;
+  }
+
+  /** Disposes this app session */
+  method void dispose() {
+    do cursor.dispose();
+    do Memory.deAlloc(this);
+    return;
+  }
+
+  /** Draw a grid of 16px squares */
+  function void drawGrid() {
+    var int maxY, maxX, y, x, size;
+    let maxY = 256;
+    let maxX = 512;
+    let y = 0;
+    let x = 0;
+    let size = 16;
+
+    while (y < maxY) {
+      do Screen.setColor(true);
+      do Screen.drawLine(0, y, 511, y);
+      let y = y + size;
+    }
+
+    while (x < maxX) {
+      do Screen.setColor(true);
+      do Screen.drawLine(x, 0, x, 255);
+      let x = x + size;
+    }
+
+    return;
+  }
+
+  /** Moves the cursor in the current direction. */
+  method void moveCursor() {
+    if (direction = 1) { do cursor.moveUp(); }
+    if (direction = 2) { do cursor.moveDown(); }
+    if (direction = 3) { do cursor.moveLeft(); }
+    if (direction = 4) { do cursor.moveRight(); }
+    do Sys.wait(120);  // delays the next movement
+    return;
+  }
+
+  method void run() {
+    var char key;  // the key currently pressed by the user
+    var boolean exit;
+    let exit = false;
+
+    do Painter.drawGrid();
+    while (~exit) {
+      // waits for a key to be pressed
+      while (key = 0) {
+        let direction = 0;
+        let key = Keyboard.keyPressed();
+      }
+      if (key = 81)  { let exit = true; }     // q key
+      if (key = 90)  { do cursor.setDraw(); } // z key
+      if (key = 88)  { do cursor.setErase(); } // x key
+      if (key = 131) { let direction = 1; }   // up arrow
+      if (key = 133) { let direction = 2; }   // down arrow
+      if (key = 130) { let direction = 3; }   // left arrow
+      if (key = 132) { let direction = 4; }   // right arrow
+
+      // waits for the key to be released
+      while (~(key = 0)) {
+        do moveCursor();
+        let key = Keyboard.keyPressed();
+      }
+    } // while
+    return;
+  }
+}

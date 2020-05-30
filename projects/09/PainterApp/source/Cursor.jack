@@ -1,0 +1,80 @@
+/** Implements a cursor that can be moved around the grid */
+class Cursor {
+  field int x, y, size;
+  field boolean isDrawing;
+
+  constructor Cursor new(int Ax, int Ay) {
+    let x = Ax;
+    let y = Ay;
+    let size = 15; // size of the cursor - 15px, to erase it correctly
+    let isDrawing = true;
+    do draw();
+    return this;
+  }
+
+  /** Disposes this cursor. */
+  method void dispose() {
+    do Memory.deAlloc(this);
+    return;
+  }
+
+  /** Start drawing */
+  method void setDraw() {
+    let isDrawing = true;
+    return;
+  }
+
+  /** Start erasing */
+  method void setErase() {
+    let isDrawing = false;
+    return;
+  }
+
+  /** Draws the cursor on the screen. */
+  method void draw() {
+    if (isDrawing) {
+      do Screen.setColor(true);
+    }
+    else {
+      do Screen.setColor(false);
+    }
+    do Screen.drawRectangle(x + 1, y + 1, x + size, y + size);
+    return;
+  }
+
+  /** Moves the cursor up one cell */
+  method void moveUp() {
+    if (y > 1) {
+      let y = y - (size + 1);
+      do draw();
+    }
+    return;
+  }
+
+  /** Moves the cursor down one cell */
+  method void moveDown() {
+    if ((y + size) < 255) {
+      let y = y + size + 1;
+      do draw();
+    }
+    return;
+  }
+
+  /** Moves the cursor right one cell */
+  method void moveRight() {
+    if ((x + size) < 511) {
+      let x = x + size + 1;
+      do draw();
+    }
+    return;
+  }
+
+  /** Moves the cursor left one cell */
+  method void moveLeft() {
+    if (x > 1) {
+      let x = x - (size + 1);
+      do draw();
+    }
+    return;
+  }
+}
