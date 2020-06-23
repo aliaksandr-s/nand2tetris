@@ -17,10 +17,8 @@
 
 (defn build-file-path [path]
   (if (str/includes? path ".jack")
-    (str/replace path #".jack" ".xmlt")
-    (str path "/" path ".xmlt")))
-
-(build-file-path "Game/Game.jack")
+    (str/replace path #".jack" ".xml")
+    (str path "/" path ".xml")))
 
 (defn create-local-filename [file]
   (str/replace file #"/" "."))
@@ -38,4 +36,53 @@
       (str/split #"\.")
       first))
 
-; (get-file-name "../../../MemoryAccess/BasicTest/BasicTest.vm")
+
+
+;;;;;;;;;; xml stuff ;;;;;;;;;;;;
+
+; <, >, ", and & are outputted as
+; &lt;, &gt;, &quot;, and &amp;
+
+(defn transform-symbol [symbol]
+  (case symbol
+    "<" "&lt;"
+    ">" "&gt;"
+    "&" "&amp;"
+    symbol))
+
+; (transform-symbol ">")
+
+(defn transform-value [token-obj]
+  (cond (= (:type token-obj) :stringConstant) 
+           (update token-obj :value str/replace #"\"" "")
+        (= (:type token-obj) :symbol) 
+           (update token-obj :value transform-symbol)
+        :else token-obj))
+
+; (transform-value {:type :stringConstant :value "\"Hello\""})
+; (transform-value {:type :symbol :value ">"})
+
+
+(defn make-tag [token-obj]
+  (let [tag (-> :type token-obj name)
+        value (:value (transform-value token-obj))]
+    (str "<" tag ">" 
+         " " value " "
+         "</" tag ">")))
+
+(defn make-open-tag [tag]
+  (str "<" tag ">"))
+
+(defn make-closing-tag [tag]
+  (str "</" tag ">"))
+
+(defn wrap-global [xml-content]
+  (flatten [(str "<tokens>") xml-content (str "</tokens>")]))
+
+(defn tokens->xml [tokens]
+  (->> tokens (map make-tag) wrap-global))
+;;;;;;;;;;;;
+
+(defn write-line [w text]
+ (.write w (str text "\n")))
+

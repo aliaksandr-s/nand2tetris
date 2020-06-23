@@ -14,7 +14,3 @@
 1. `mkdir classes`
 2. `clj -e "(compile 'translator.main)"`
 3. `clojure -A:uberjar --main-class translator.main`
-
-> TODO: 
-> 1. Folders translation
-> 4. Init

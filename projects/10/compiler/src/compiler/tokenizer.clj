@@ -7,7 +7,7 @@
 (defn pad-symbols [content]
   (str/replace content #"([{}()\[\].,;+\-*\/&|<>=~])" " $1 "))
 
-(defn split-exluding-strins [content]
+(defn split-exluding-strings [content]
   (str/split content #"\s(?=([^\"]|\"[^\"]*\")*$)"))
 
 (defn remove-empty [content]
@@ -32,53 +32,18 @@
     ; :else (throw (Exception. (str token " is not valid token")))
     :else :identifier))
 
-
-; <, >, ", and & are outputted as
-; &lt;, &gt;, &quot;, and &amp;
-
-(defn transform-symbol [symbol]
-  (case symbol
-    "<" "&lt;"
-    ">" "&gt;"
-    "&" "&amp;"
-    symbol))
-
-; (transform-symbol ">")
-
-(defn transform-value [token-obj]
-  (cond (= (:type token-obj) :stringConstant) 
-           (update token-obj :value str/replace #"\"" "")
-        (= (:type token-obj) :symbol) 
-           (update token-obj :value transform-symbol)
-        :else token-obj))
-
-; (transform-value {:type :stringConstant :value "\"Hello\""})
-; (transform-value {:type :symbol :value ">"})
-
-
-(defn make-tag [token-obj]
-  (let [tag (-> :type token-obj name)
-        value (:value (transform-value token-obj))]
-    (str "<" tag ">" 
-         " " value " "
-         "</" tag ">")))
-
 (defn handle-types [tokens] 
   (map (fn [token] {:type (get-type token) :value token}) tokens))
-
-(defn wrap-global [xml-content]
-  (flatten [(str "<tokens>") xml-content (str "</tokens>")]))
 
 (defn tokenize [content]
   (->> content
        remove-comments
        pad-symbols
-       split-exluding-strins
+       str/split-lines
+       (map split-exluding-strings)
+       flatten
        remove-empty
-       handle-types
-       (map make-tag)
-       wrap-global))
-
+       handle-types))
 
 ; (def ttt (make-tag {:type :symbol :value "\"helllo\""}))
 
