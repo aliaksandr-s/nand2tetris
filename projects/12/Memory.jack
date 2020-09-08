@@ -4,31 +4,81 @@
 // File name: projects/12/Memory.jack
 
 /**
- * This library provides two services: direct access to the computer's main
- * memory (RAM), and allocation and recycling of memory blocks. The Hack RAM
- * consists of 32,768 words, each holding a 16-bit binary number.
+ * Memory operations library.
  */ 
 class Memory {
+    static int LENGTH_INDEX;
+    static int NEXT_INDEX;
+    static Array freeList;
 
-    /** Initializes the class. */
+    /** Initializes memory parameters. */
     function void init() {
+      var Array next;
+      let LENGTH_INDEX = 0;
+      let NEXT_INDEX = 1;
+      let freeList = 2048;
+      let freeList[LENGTH_INDEX] = 2;
+      let freeList[NEXT_INDEX] = 2050;
+      let next = freeList[NEXT_INDEX];
+      let next[LENGTH_INDEX] = 16382;
+      let next[NEXT_INDEX] = null;
+      return;
     }
 
-    /** Returns the RAM value at the given address. */
+    /** Returns the value of the main memory at the given address. */
     function int peek(int address) {
+      var Array memory;
+      let memory = 0;
+      return memory[address];
     }
 
-    /** Sets the RAM value at the given address to the given value. */
+    /** Sets the value of the main memory at this address
+     *  to the given value. */
     function void poke(int address, int value) {
+      var Array memory;
+      let memory = 0;
+      let memory[address] = value;
+      return;
     }
 
-    /** Finds an available RAM block of the given size and returns
-     *  a reference to its base address. */
+    /** finds and allocates from the heap a memory block of the 
+     *  specified size and returns a reference to its base address. */
     function int alloc(int size) {
+      var Array block;
+      var Array prev;
+      var Array next;
+
+      let block = freeList;
+      while(~(block[LENGTH_INDEX] > size)) {
+        if(block[NEXT_INDEX] = null) {
+          do Sys.error(6);
+          return -1;
+        } else {
+          let prev = block;
+          let block = block[NEXT_INDEX];
+        }
+      }
+      if(~(block[LENGTH_INDEX] = size + 1)) {
+        let next = block + size + 1;
+        let next[LENGTH_INDEX] = block[LENGTH_INDEX] - (size + 1);
+        let next[NEXT_INDEX] = block[NEXT_INDEX];
+        let prev[NEXT_INDEX] = next;
+      }
+      let block[LENGTH_INDEX] = size + 1;
+      return block + 1;
     }
 
-    /** De-allocates the given object (cast as an array) by making
-     *  it available for future allocations. */
-    function void deAlloc(Array o) {
+    /** De-allocates the given object and frees its space. */
+    function void deAlloc(int object) {
+      var Array node;
+      var Array deAllocated;
+      let deAllocated = object - 1;
+      let deAllocated[NEXT_INDEX] = null;
+      let node = freeList;
+      while(~(node[NEXT_INDEX] = null)) {
+        let node = node[NEXT_INDEX];
+      }
+      let node[NEXT_INDEX] = deAllocated;
+      return;
     }    
 }
